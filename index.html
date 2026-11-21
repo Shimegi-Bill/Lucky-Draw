@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <!-- 版本號：上載前一定要改（格式 日期-次數） -->
-<script>window.__LUCKY_VER='2026.11.21-2';</script>
+<script>window.__LUCKY_VER='2026.11.22-1';</script>
 <style>
 :root{
   --bg:#f6efe1; --paper:#fffaf1; --paper2:#f3e8d4;
@@ -658,34 +658,29 @@ setInterval(()=>{ if(!spinning && !flashing && !document.hidden){ bulbPhase++; s
 
 /* ================= 聲效（WEB-01、WEB-02、WEB-24、WEB-36） ================= */
 const ACtor = window.AudioContext || window.webkitAudioContext;
-const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints > 1);
-let ac = null, out = null, wet = null, noiseBuf = null, audRe = false, audHid = 0, silentEl = null;
-function setSession(){ try{ if(navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; }catch(e){} }
-function silentUnlock(){
-  // 舊 iOS（冇 audioSession）：播一段無聲 WAV，等靜音掣都唔會收埋聲
-  if(navigator.audioSession || !isIOS) return;
-  try{
-    if(!silentEl){
-      const n = 8000, buf = new ArrayBuffer(44+n), v = new DataView(buf), w = (o,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
-      w(0,'RIFF'); v.setUint32(4,36+n,true); w(8,'WAVEfmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
-      v.setUint32(24,8000,true); v.setUint32(28,8000,true); v.setUint16(32,1,true); v.setUint16(34,8,true); w(36,'data'); v.setUint32(40,n,true);
-      for(let i=0;i<n;i++) v.setUint8(44+i,128);
-      silentEl = document.createElement('audio'); silentEl.setAttribute('playsinline',''); silentEl.loop = true;
-      silentEl.src = URL.createObjectURL(new Blob([buf], {type:'audio/wav'}));
-    }
-    if(silentEl.paused){ const p = silentEl.play(); if(p && p.catch) p.catch(()=>{}); }
-  }catch(e){}
+let ac = null, out = null, wet = null, noiseBuf = null, audRe = false, audHid = 0, idleT = 0;
+/* 出聲先開，靜咗就閂（WEB-37）：AudioContext 一直開住，或者 audioSession 一直係 playback，
+   iPhone 會當網頁播緊音樂，鎖機畫面同控制中心長住出播放器。所以唔播無聲 WAV，
+   每次出完聲 3 秒冇聲就 close()，audioSession 設返 'auto'；去背景即刻閂。 */
+function setSession(t){ try{ if(navigator.audioSession && navigator.audioSession.type !== t) navigator.audioSession.type = t; }catch(e){} }
+function releaseAudio(){
+  clearTimeout(idleT); idleT = 0;
+  if(ac && (spinning || dragging) && !document.hidden){ keepAudio(3000); return; }
+  if(ac){ const old = ac; ac = null; out = wet = noiseBuf = null; try{ old.onstatechange = null; old.close(); }catch(e){} }
+  audRe = false;
+  setSession('auto');
 }
+function keepAudio(ms){ clearTimeout(idleT); idleT = setTimeout(releaseAudio, ms || 3000); }
 function ensureAudio(){
-  if(!S.set.sound || !ACtor) return;
-  setSession();
+  if(!S.set.sound || !ACtor || document.hidden) return;
+  setSession('playback');                          // 出聲嗰陣先當媒體播放（靜音掣都有聲，WEB-02）
   if(audRe && ac){ const old = ac; ac = null; try{ old.onstatechange = null; old.close(); }catch(e){} }
   audRe = false;
   if(!ac){
     try{
       ac = new ACtor(); const me = ac;
       // 淨係理自己：舊嗰個閂咗唔好當新嗰個壞咗
-      me.onstatechange = () => { if(me === ac && me.state !== 'running' && !document.hidden) audRe = true; };
+      me.onstatechange = () => { if(me === ac && me.state !== 'running' && me.state !== 'closed' && !document.hidden) audRe = true; };
       const comp = ac.createDynamicsCompressor();
       comp.threshold.value = -18; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = .003; comp.release.value = .2;
       out = ac.createGain(); out.gain.value = .9; out.connect(comp); comp.connect(ac.destination);
@@ -698,13 +693,16 @@ function ensureAudio(){
     }catch(e){ ac = null; return; }
   }
   if(ac.state !== 'running' && ac.state !== 'closed'){ try{ const p = ac.resume(); if(p && p.catch) p.catch(()=>{}); }catch(e){} }
-  silentUnlock();
+  keepAudio(3000);
 }
-['touchend','pointerdown','click','keydown'].forEach(ev=>addEventListener(ev, ()=>ensureAudio(), {capture:true, passive:true}));
+// 只係撳掣或者輪盤先準備聲音（喺用家撳嘅一刻建立，iPhone 先肯出聲，WEB-01）；撳其他位唔開
+const wantsAudio = t => t && t.closest && (t.closest('button') || t.closest('#wheelbox'));
+['touchend','pointerdown','click','keydown'].forEach(ev=>addEventListener(ev, e=>{ if(ev === 'keydown' || wantsAudio(e.target)) ensureAudio(); }, {capture:true, passive:true}));
 document.addEventListener('visibilitychange', ()=>{
-  if(document.hidden){ audHid = performance.now(); saveNow(); if(silentEl) silentEl.pause(); }
-  else { if(ac && performance.now() - audHid > 1500) audRe = true; fixH(); setTimeout(checkVer, 800); }
+  if(document.hidden){ audHid = performance.now(); saveNow(); releaseAudio(); }
+  else { fixH(); setTimeout(checkVer, 800); }
 });
+addEventListener('pagehide', releaseAudio);
 addEventListener('pageshow', e=>{ if(e.persisted){ if(ac) audRe = true; fixH(); } });
 const canPlay = () => S.set.sound && ac && ac.state === 'running';
 
@@ -713,7 +711,7 @@ function tick(speed){
   if(!canPlay()) return;
   const p = performance.now();                    // 用 performance.now() 節流，唔好用 ac.currentTime（重建之後會由 0 計）
   if(p - lastTickP < 22) return;
-  lastTickP = p; tickN++;
+  lastTickP = p; tickN++; keepAudio(3000);
   const t = ac.currentTime, v = clamp(.5 + speed*.012, .5, 1);
   const src = ac.createBufferSource(); src.buffer = noiseBuf; src.playbackRate.value = .9 + Math.random()*.25;
   const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3000 + Math.random()*400; bp.Q.value = 1.4;
@@ -740,6 +738,7 @@ function pad(f, t, dur, vol){
 }
 function winSound(){
   if(!canPlay()) return;
+  keepAudio(3500);
   const t = ac.currentTime + .02;
   [523.25,659.25,783.99,1046.5].forEach((f,i)=>bell(f, t+i*.075, .7, .2));
   [523.25,659.25,783.99,1046.5].forEach(f=>pad(f, t+.3, 1.2, .07));
@@ -1196,7 +1195,7 @@ function renderOpts(){
   sb.innerHTML = S.set.sound ? SPK_ON : SPK_OFF;
   sb.classList.toggle('off', !S.set.sound);
 }
-function setSound(on){ S.set.sound = on; save(); renderOpts(); if(on) ensureAudio(); }
+function setSound(on){ S.set.sound = on; save(); renderOpts(); if(on) ensureAudio(); else releaseAudio(); }
 $('optRemove').addEventListener('click', ()=>{ S.set.remove = !S.set.remove; save(); renderOpts(); });
 $('optSound').addEventListener('click', ()=>setSound(!S.set.sound));
 $('optVibe').addEventListener('click', ()=>{ S.set.vibe = !S.set.vibe; save(); renderOpts(); });
