@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <!-- 版本號：上載前一定要改（格式 日期-次數） -->
-<script>window.__LUCKY_VER='2026.11.22-3';</script>
+<script>window.__LUCKY_VER='2026.11.22-4';</script>
 <style>
 :root{
   --bg:#f6efe1; --paper:#fffaf1; --paper2:#f3e8d4;
@@ -233,8 +233,15 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   background-image:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(255,255,255,0) 50%);
   box-shadow:inset 0 -2px 3px rgba(0,0,0,.18),0 1px 2px rgba(90,50,20,.3)}
 .ld-item-in{flex:1;min-width:0;height:40px;background:transparent;border:0;color:var(--ink);font-size:17px;font-weight:600;outline:none;font-family:inherit}
-.ld-item select{height:36px;border-radius:10px;font-size:14px;font-weight:700;padding:0 6px;color:var(--ink);font-family:inherit;
-  background:linear-gradient(180deg,#fff,#f4ead8);border:1px solid rgba(160,120,70,.25);-webkit-appearance:none;appearance:none;text-align:center;min-width:46px}
+.ld-wbtn{height:36px;min-width:58px;border-radius:10px;font-size:14px;font-weight:800;padding:0 8px 0 10px;color:var(--ink);flex:none;
+  display:flex;align-items:center;justify-content:center;gap:5px;background:linear-gradient(180deg,#fff,#f4ead8);border:1px solid rgba(160,120,70,.25);
+  box-shadow:inset 0 1px 0 #fff,0 2px 4px -2px rgba(130,90,40,.3);transition:transform .25s var(--spring)}
+.ld-wbtn:active{transform:scale(.94)}
+.ld-wbtn i{width:6px;height:6px;border-right:2px solid var(--ink2);border-bottom:2px solid var(--ink2);transform:translateY(-2px) rotate(45deg);transition:transform .25s var(--spring)}
+.ld-wbtn.open{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,164,65,.25)}
+.ld-wbtn.open i{transform:translateY(1px) rotate(225deg)}
+.ld-wmenu{position:fixed;z-index:60;width:168px;top:0;left:0;padding:5px}
+.ld-wmenu .ld-mi{min-height:44px}
 .ld-x{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;transition:transform .25s var(--spring)}
 .ld-x:active{transform:scale(.85)}
 .ld-x svg{width:16px;height:16px;stroke:#c4502f;stroke-width:2.6;stroke-linecap:round}
@@ -411,6 +418,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   </div>
 </div>
 
+<div class="ld-menu ld-wmenu" id="wMenu"></div>
 <div class="ld-toast" id="toast"></div>
 
 <script>
@@ -1105,7 +1113,7 @@ function openSheet(){
 function closeSheet(){
   if(!sheetOpen) return;
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-  closeDD(); sheetOpen = false; $('sheet').classList.remove('show'); $('shade').classList.remove('show'); $('bulk').classList.remove('show');
+  closeDD(); closeWMenu(); sheetOpen = false; $('sheet').classList.remove('show'); $('shade').classList.remove('show'); $('bulk').classList.remove('show');
   saveNow(); renderOpts();
   $('titleText').textContent = curW().name;
   setTimeout(()=>{
@@ -1153,16 +1161,38 @@ function makeRow(it){
     r.onclick = ()=>{ it.off = false; save(); const n = makeRow(it); n.classList.add('enter'); row.replaceWith(n); updateDots(); updateCount(); };
     row.appendChild(r);
   }else{
-    const sel = document.createElement('select'); sel.setAttribute('aria-label','比重');
-    [1,2,3,4,5,10].forEach(v=>{ const o = document.createElement('option'); o.value = v; o.textContent = '×'+v; if((it.w||1) == v) o.selected = true; sel.appendChild(o); });
-    sel.onchange = ()=>{ it.w = +sel.value; save(); };
-    row.appendChild(sel);
+    const wb = document.createElement('button'); wb.className = 'ld-wbtn'; wb.setAttribute('aria-label','比重');
+    wb.innerHTML = '<span>×'+(it.w||1)+'</span><i></i>';
+    wb.onclick = ()=>openWMenu(wb, it);
+    row.appendChild(wb);
   }
   const x = document.createElement('button'); x.className = 'ld-x'; x.innerHTML = X_SVG; x.setAttribute('aria-label','刪除');
   x.onclick = ()=>removeRow(it, row);
   row.appendChild(x);
   return row;
 }
+// 比重：同主頁一樣嘅彈出選單，唔用系統下拉列表（Bill 2026-11-22）
+let wOpen = null;
+function openWMenu(btn, it){
+  if(wOpen && wOpen.btn === btn) return closeWMenu();
+  closeWMenu(); closeDD();
+  const m = $('wMenu'); m.innerHTML = '';
+  WEIGHTS.forEach(v=>{
+    const b = document.createElement('button'); b.className = 'ld-mi'+((it.w||1) === v ? ' cur' : '');
+    b.innerHTML = '<b>×'+v+'</b><small>'+(v === 1 ? '正常' : v+' 倍機會')+'</small>';
+    b.onclick = ()=>{ it.w = v; save(); btn.querySelector('span').textContent = '×'+v; closeWMenu(); };
+    m.appendChild(b);
+  });
+  const r = btn.getBoundingClientRect(), mh = WEIGHTS.length*44 + 12, vh = innerHeight;
+  const below = r.bottom + 8 + mh < vh - 10;
+  m.style.left = Math.max(10, Math.min(innerWidth - 178, r.right - 168)) + 'px';
+  m.style.top = (below ? r.bottom + 8 : Math.max(10, r.top - 8 - mh)) + 'px';
+  m.style.transformOrigin = below ? '85% 0' : '85% 100%';
+  wOpen = {btn, it}; btn.classList.add('open'); m.classList.add('show');
+}
+function closeWMenu(){ if(!wOpen) return; wOpen.btn.classList.remove('open'); wOpen = null; $('wMenu').classList.remove('show'); }
+document.addEventListener('pointerdown', e=>{ if(wOpen && !e.target.closest('#wMenu') && !e.target.closest('.ld-wbtn')) closeWMenu(); }, true);
+$('sheetBody').addEventListener('scroll', closeWMenu, {passive:true});
 function removeRow(it, row){
   const w = curW(); w.items = w.items.filter(y=>y !== it); save();
   row.style.pointerEvents = 'none';
