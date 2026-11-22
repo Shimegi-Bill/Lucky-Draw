@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <!-- 版本號：上載前一定要改（格式 日期-次數） -->
-<script>window.__LUCKY_VER='2026.11.22-2';</script>
+<script>window.__LUCKY_VER='2026.11.22-3';</script>
 <style>
 :root{
   --bg:#f6efe1; --paper:#fffaf1; --paper2:#f3e8d4;
@@ -140,11 +140,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   box-shadow:inset 0 2px 0 rgba(255,255,255,.4),inset 0 -2px 6px rgba(140,30,10,.28),0 1px 0 #a93a20,0 5px 10px -4px rgba(169,58,32,.5)}
 .ld-spin:disabled{filter:saturate(.7) brightness(1.06);cursor:default}
 .ld-spin:disabled::after{animation:none;opacity:0}
-.ld-foot{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.ld-credit{font-size:11px;line-height:1.5;color:var(--ink2);opacity:.75;letter-spacing:.5px}
-.ld-corner{display:flex;gap:8px;flex:none}
-.ld-mini{width:46px;height:46px;border-radius:15px}
-.ld-mini svg{width:21px;height:21px}
+.ld-credit{font-size:11px;color:var(--ink2);opacity:.75;letter-spacing:.5px}
+.ld-setmenu{left:auto;right:0;width:min(290px,100%);transform-origin:90% 0;padding:10px 8px 8px}
+.ld-setmenu-t{font-size:13px;font-weight:800;letter-spacing:1.5px;color:var(--ink2);padding:2px 10px 6px}
+.ld-srow{display:flex;align-items:center;gap:10px;min-height:54px;padding:0 10px 0 14px;border-radius:15px;font-size:17px;font-weight:700}
+.ld-srow span{flex:1}
+.ld-snote{font-size:12px;color:var(--ink2);padding:2px 14px 6px}
+.ld-dd{position:relative;z-index:5}
+.ld-dd .ld-select{display:flex;align-items:center;text-align:left}
+.ld-dd .ld-select span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ld-dd.open .ld-select{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,164,65,.25)}
+.ld-ddmenu{width:100%;max-height:calc(var(--app-h) * .5)}
 .ld-select{width:100%;height:50px;border-radius:15px;padding:0 44px 0 16px;font-size:17px;font-weight:800;color:var(--ink);font-family:inherit;
   -webkit-appearance:none;appearance:none;border:1px solid rgba(160,120,70,.25);
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%238b735c' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 16px center/14px 9px no-repeat,linear-gradient(180deg,#fffefb,#f4e9d4);
@@ -276,7 +282,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
     <button class="ld-title ld-neu" id="titleBtn" aria-label="揀輪盤">
       <span class="ld-title-k">而家轉緊</span><span class="ld-title-t" id="titleText">幸運輪盤</span><i class="ld-caret"></i>
     </button>
+    <button class="ld-icon ld-neu" id="editBtn" aria-label="設定輪盤">
+      <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.3"/><circle cx="10" cy="17" r="2.3"/></svg>
+    </button>
+    <button class="ld-icon ld-neu" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
     <div class="ld-menu" id="menu"></div>
+    <div class="ld-menu ld-setmenu" id="setMenu">
+      <div class="ld-setmenu-t">設定</div>
+      <div class="ld-srow"><span>聲效</span><button class="ld-switch" id="optSound" aria-label="聲效"></button></div>
+      <div class="ld-srow"><span>震動</span><button class="ld-switch" id="optVibe" aria-label="震動"></button></div>
+      <div class="ld-snote" id="vibeNote">iPhone 唔支援網頁震動，Android 先會震</div>
+    </div>
   </header>
 
   <main class="ld-stage" id="stage">
@@ -303,14 +319,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   <section class="ld-bottom" id="bottom">
     <div class="ld-last hint" id="last"><span class="ld-last-k">抽中</span><span class="ld-last-t" id="lastText">撳「轉！」或者用手指撥個輪盤</span></div>
     <button class="ld-spin" id="spinBtn"><span id="spinLabel">轉！</span></button>
-    <div class="ld-foot">
-      <div class="ld-credit">由 Bill Chiu 開發<br><span data-ver></span></div>
-      <div class="ld-corner">
-        <button class="ld-icon ld-neu ld-mini" id="soundBtn" aria-label="聲效"></button>
-        <button class="ld-icon ld-neu ld-mini" id="vibeBtn" aria-label="震動"></button>
-        <button class="ld-icon ld-neu ld-mini" id="editBtn" aria-label="設定"><svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
-      </div>
-    </div>
+    <div class="ld-credit">由 Bill Chiu 開發 · <span data-ver></span></div>
   </section>
 </div>
 
@@ -339,7 +348,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   <div class="ld-sheet-body" id="sheetBody">
     <div class="ld-sec">
       <div class="ld-sec-t">我嘅輪盤</div>
-      <select class="ld-select" id="wheelSel" aria-label="揀輪盤"></select>
+      <div class="ld-dd" id="wheelDD">
+        <button class="ld-select" id="wheelSelBtn" aria-label="揀輪盤"><span id="wheelSelText"></span></button>
+        <div class="ld-menu ld-ddmenu" id="wheelDDMenu"></div>
+      </div>
       <div class="ld-tools">
         <button class="ld-tool ld-neu add" id="newWheelBtn">＋ 新輪盤</button>
         <button class="ld-tool ld-neu" id="renameBtn">改名</button>
@@ -1037,12 +1049,27 @@ function openMenu(){
   const ed = document.createElement('button'); ed.className = 'ld-mi act'; ed.innerHTML = '<b>設定呢個輪盤</b>';
   ed.onclick = ()=>{ closeMenu(); openSheet(); };
   m.append(add, ed);
-  menuOpen = true; m.classList.add('show'); $('menuShade').classList.add('show'); $('titleBtn').classList.add('open');
+  closeSetMenu(); menuOpen = true; m.classList.add('show'); $('menuShade').classList.add('show'); $('titleBtn').classList.add('open');
 }
 function closeMenu(){
+  closeSetMenu();
   if(!menuOpen) return;
   menuOpen = false; $('menu').classList.remove('show'); $('menuShade').classList.remove('show'); $('titleBtn').classList.remove('open');
 }
+// 齒輪：聲效、震動
+let setOpen = false;
+function openSetMenu(){
+  if(spinning) return;
+  closeMenu(); renderOpts();
+  setOpen = true; $('setMenu').classList.add('show'); $('menuShade').classList.add('show');
+  const g = $('gearBtn').querySelector('svg');
+  if(g) g.animate([{transform:'rotate(0deg)', easing:'cubic-bezier(.2,.9,.3,1.2)'}, {transform:'rotate(120deg)'}], {duration:420});
+}
+function closeSetMenu(){
+  if(!setOpen) return;
+  setOpen = false; $('setMenu').classList.remove('show'); if(!menuOpen) $('menuShade').classList.remove('show');
+}
+$('gearBtn').addEventListener('click', ()=> setOpen ? closeSetMenu() : openSetMenu());
 $('titleBtn').addEventListener('click', ()=> menuOpen ? closeMenu() : openMenu());
 $('menuShade').addEventListener('click', closeMenu);
 function switchWheel(id, force){
@@ -1078,7 +1105,7 @@ function openSheet(){
 function closeSheet(){
   if(!sheetOpen) return;
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-  sheetOpen = false; $('sheet').classList.remove('show'); $('shade').classList.remove('show'); $('bulk').classList.remove('show');
+  closeDD(); sheetOpen = false; $('sheet').classList.remove('show'); $('shade').classList.remove('show'); $('bulk').classList.remove('show');
   saveNow(); renderOpts();
   $('titleText').textContent = curW().name;
   setTimeout(()=>{
@@ -1087,25 +1114,30 @@ function closeSheet(){
   }, 180);
   setTimeout(checkVer, 800);
 }
-$('editBtn').addEventListener('click', ()=>{
-  const g = $('editBtn').querySelector('svg');
-  if(g) g.animate([{transform:'rotate(0deg)', easing:'cubic-bezier(.2,.9,.3,1.2)'}, {transform:'rotate(120deg)'}], {duration:420});
-  openSheet();
-});
+$('editBtn').addEventListener('click', openSheet);
 $('doneBtn').addEventListener('click', closeSheet);
 $('shade').addEventListener('click', closeSheet);
 
 function renderSheet(stagger){ renderChips(); renderItems(stagger); renderOpts(); renderHist(); }
+// 設定入面揀輪盤：同主頁一樣嘅彈出選單，唔用系統下拉列表
+const liveCount = w => w.items.filter(i=>!i.off && i.text.trim()).length;
 function renderChips(){
-  const sel = $('wheelSel'); sel.innerHTML = '';
+  $('wheelSelText').textContent = curW().name+'（'+liveCount(curW())+' 個）';
+  const m = $('wheelDDMenu'); m.innerHTML = '';
   S.wheels.forEach(w=>{
-    const o = document.createElement('option'); o.value = w.id;
-    o.textContent = w.name+'（'+w.items.filter(i=>i.text.trim()).length+' 個）';
-    if(w.id === S.cur) o.selected = true;
-    sel.appendChild(o);
+    const b = document.createElement('button'); b.className = 'ld-mi'+(w.id===S.cur?' cur':'');
+    b.innerHTML = '<b>'+esc(w.name)+'</b><small>'+liveCount(w)+' 個</small>';
+    b.onclick = ()=>{ closeDD(); if(w.id === S.cur) return; S.cur = w.id; save(); renderChips(); renderItems(true); };
+    m.appendChild(b);
   });
 }
-$('wheelSel').addEventListener('change', e=>{ S.cur = e.target.value; save(); renderChips(); renderItems(true); });
+let ddOpen = false;
+function closeDD(){ if(!ddOpen) return; ddOpen = false; $('wheelDDMenu').classList.remove('show'); $('wheelDD').classList.remove('open'); }
+$('wheelSelBtn').addEventListener('click', ()=>{
+  if(ddOpen) return closeDD();
+  renderChips(); ddOpen = true; $('wheelDDMenu').classList.add('show'); $('wheelDD').classList.add('open');
+});
+document.addEventListener('pointerdown', e=>{ if(ddOpen && !e.target.closest('#wheelDD')) closeDD(); }, true);
 $('newWheelBtn').addEventListener('click', ()=>newWheel(false));
 const X_SVG = '<svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg>';
 function makeRow(it){
@@ -1209,38 +1241,22 @@ $('delWheelBtn').addEventListener('click', ()=>{
   S.cur = S.wheels[Math.max(0,i-1)].id; save(); renderChips(); renderItems(true);
 });
 
-const SPK_ON = '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
-const VIB_ON = '<svg viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 9v6M19.5 9v6M2 11v2M22 11v2"/></svg>';
-const VIB_OFF = '<svg viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M3 3l18 18"/></svg>';
-const SPK_OFF = '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
 function renderOpts(){
   $('optRemove').classList.toggle('on', S.set.remove);
   document.querySelectorAll('#optDur button').forEach(b=>b.classList.toggle('cur', b.dataset.d === S.set.dur));
-  const sb = $('soundBtn');
-  sb.innerHTML = S.set.sound ? SPK_ON : SPK_OFF;
-  sb.classList.toggle('off', !S.set.sound);
-  const vb = $('vibeBtn');
-  vb.innerHTML = S.set.vibe ? VIB_ON : VIB_OFF;
-  vb.classList.toggle('off', !S.set.vibe);
+  $('optSound').classList.toggle('on', S.set.sound);
+  $('optVibe').classList.toggle('on', S.set.vibe);
   document.querySelectorAll('#fmtSeg button').forEach(b=>b.classList.toggle('cur', b.dataset.f === S.set.fmt));
   document.querySelectorAll('#scopeSeg button').forEach(b=>b.classList.toggle('cur', b.dataset.s === S.set.scope));
 }
 function setSound(on){ S.set.sound = on; save(); renderOpts(); if(on) ensureAudio(); else releaseAudio(); }
 $('optRemove').addEventListener('click', ()=>{ S.set.remove = !S.set.remove; save(); renderOpts(); });
-function popIcon(el){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
-$('vibeBtn').addEventListener('click', ()=>{
-  S.set.vibe = !S.set.vibe; save(); renderOpts(); popIcon($('vibeBtn'));
-  if(S.set.vibe) vibe(30);
-  toast(S.set.vibe ? (navigator.vibrate ? '震動：開' : '震動：開（iPhone 唔支援網頁震動）') : '震動：熄');
-});
+$('optSound').addEventListener('click', ()=>setSound(!S.set.sound));
+$('optVibe').addEventListener('click', ()=>{ S.set.vibe = !S.set.vibe; save(); renderOpts(); if(S.set.vibe) vibe(30); });
+$('vibeNote').style.display = navigator.vibrate ? 'none' : '';
 $('fmtSeg').addEventListener('click', e=>{ const f = e.target.dataset && e.target.dataset.f; if(f){ S.set.fmt = f; save(); renderOpts(); } });
 $('scopeSeg').addEventListener('click', e=>{ const v = e.target.dataset && e.target.dataset.s; if(v){ S.set.scope = v; save(); renderOpts(); } });
 $('optDur').addEventListener('click', e=>{ const d = e.target.dataset && e.target.dataset.d; if(d){ S.set.dur = d; save(); renderOpts(); } });
-$('soundBtn').addEventListener('click', ()=>{
-  setSound(!S.set.sound);
-  popIcon($('soundBtn'));
-  toast(S.set.sound ? '聲效：開' : '聲效：熄');
-});
 function renderHist(){
   const h = $('hist');
   if(!S.hist.length){ h.innerHTML = '<div>未有紀錄</div>'; return; }
@@ -1388,7 +1404,7 @@ function checkVer(){
     verChecking = false;
     const m = txt.match(new RegExp("__LUCKY"+"_VER='([0-9A-Za-z.\\-]+)'"));
     if(!m || m[1] === VER) return;
-    if(spinning || popOpen || sheetOpen || menuOpen || dragging) return;      // 用緊就等陣先
+    if(spinning || popOpen || sheetOpen || menuOpen || setOpen || dragging) return;      // 用緊就等陣先
     const k = 'ld-reload-' + m[1];
     try{ const last = +sessionStorage.getItem(k); if(last && Date.now() - last < 120000) return; sessionStorage.setItem(k, Date.now()); }catch(e){}
     saveNow();
