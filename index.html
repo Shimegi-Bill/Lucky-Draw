@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <!-- 版本號：上載前一定要改（格式 日期-次數） -->
-<script>window.__LUCKY_VER='2026.11.22-1';</script>
+<script>window.__LUCKY_VER='2026.11.22-2';</script>
 <style>
 :root{
   --bg:#f6efe1; --paper:#fffaf1; --paper2:#f3e8d4;
@@ -140,7 +140,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   box-shadow:inset 0 2px 0 rgba(255,255,255,.4),inset 0 -2px 6px rgba(140,30,10,.28),0 1px 0 #a93a20,0 5px 10px -4px rgba(169,58,32,.5)}
 .ld-spin:disabled{filter:saturate(.7) brightness(1.06);cursor:default}
 .ld-spin:disabled::after{animation:none;opacity:0}
-.ld-credit{font-size:11px;color:var(--ink2);opacity:.75;letter-spacing:.5px}
+.ld-foot{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ld-credit{font-size:11px;line-height:1.5;color:var(--ink2);opacity:.75;letter-spacing:.5px}
+.ld-corner{display:flex;gap:8px;flex:none}
+.ld-mini{width:46px;height:46px;border-radius:15px}
+.ld-mini svg{width:21px;height:21px}
+.ld-select{width:100%;height:50px;border-radius:15px;padding:0 44px 0 16px;font-size:17px;font-weight:800;color:var(--ink);font-family:inherit;
+  -webkit-appearance:none;appearance:none;border:1px solid rgba(160,120,70,.25);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%238b735c' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 16px center/14px 9px no-repeat,linear-gradient(180deg,#fffefb,#f4e9d4);
+  box-shadow:inset 0 1px 0 #fff,0 4px 10px -4px rgba(130,90,40,.35);outline:none}
+.ld-select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,164,65,.25)}
+.ld-tool.add{color:#c4502f}
 
 /* ---------- 結果 ---------- */
 .ld-confetti{position:fixed;inset:0;z-index:45;pointer-events:none;width:100%;height:100%}
@@ -203,11 +213,6 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
 .ld-sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(var(--sb) + 30px)}
 .ld-sec{margin-bottom:22px}
 .ld-sec-t{font-size:13px;color:var(--ink2);margin:0 0 9px 4px;font-weight:800;letter-spacing:1.5px}
-.ld-chips{display:flex;flex-wrap:wrap;gap:8px}
-.ld-chip{height:40px;padding:0 16px;border-radius:20px;font-size:15px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ld-chip.cur{color:#5a3510;background:linear-gradient(180deg,#fbd88a,#e3a53e);border-color:#d79a35;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 4px 10px -4px rgba(170,110,30,.6)}
-.ld-chip.add{color:#c4502f;border-style:dashed;background:transparent;box-shadow:none}
 .ld-tools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .ld-tool{height:38px;padding:0 13px;border-radius:12px;font-size:14px;font-weight:700}
 .ld-tool.warn{color:#c4502f}
@@ -271,10 +276,6 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
     <button class="ld-title ld-neu" id="titleBtn" aria-label="揀輪盤">
       <span class="ld-title-k">而家轉緊</span><span class="ld-title-t" id="titleText">幸運輪盤</span><i class="ld-caret"></i>
     </button>
-    <button class="ld-icon ld-neu" id="soundBtn" aria-label="聲效"></button>
-    <button class="ld-icon ld-neu" id="editBtn" aria-label="設定輪盤">
-      <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.3"/><circle cx="10" cy="17" r="2.3"/></svg>
-    </button>
     <div class="ld-menu" id="menu"></div>
   </header>
 
@@ -302,7 +303,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   <section class="ld-bottom" id="bottom">
     <div class="ld-last hint" id="last"><span class="ld-last-k">抽中</span><span class="ld-last-t" id="lastText">撳「轉！」或者用手指撥個輪盤</span></div>
     <button class="ld-spin" id="spinBtn"><span id="spinLabel">轉！</span></button>
-    <div class="ld-credit">由 Bill Chiu 開發 · <span data-ver></span></div>
+    <div class="ld-foot">
+      <div class="ld-credit">由 Bill Chiu 開發<br><span data-ver></span></div>
+      <div class="ld-corner">
+        <button class="ld-icon ld-neu ld-mini" id="soundBtn" aria-label="聲效"></button>
+        <button class="ld-icon ld-neu ld-mini" id="vibeBtn" aria-label="震動"></button>
+        <button class="ld-icon ld-neu ld-mini" id="editBtn" aria-label="設定"><svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+    </div>
   </section>
 </div>
 
@@ -331,12 +339,20 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   <div class="ld-sheet-body" id="sheetBody">
     <div class="ld-sec">
       <div class="ld-sec-t">我嘅輪盤</div>
-      <div class="ld-chips" id="wheelChips"></div>
+      <select class="ld-select" id="wheelSel" aria-label="揀輪盤"></select>
       <div class="ld-tools">
+        <button class="ld-tool ld-neu add" id="newWheelBtn">＋ 新輪盤</button>
         <button class="ld-tool ld-neu" id="renameBtn">改名</button>
         <button class="ld-tool ld-neu" id="dupBtn">複製</button>
         <button class="ld-tool ld-neu warn" id="delWheelBtn">刪除呢個輪盤</button>
       </div>
+    </div>
+
+    <div class="ld-sec">
+      <div class="ld-sec-t">玩法</div>
+      <div class="ld-opt"><span>抽中後踢走（淘汰模式）</span><button class="ld-switch" id="optRemove" aria-label="淘汰模式"></button></div>
+      <div class="ld-opt"><span>轉幾耐</span><div class="ld-seg" id="optDur">
+        <button data-d="short">快</button><button data-d="mid">中</button><button data-d="long">慢</button></div></div>
     </div>
 
     <div class="ld-sec">
@@ -363,12 +379,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
     </div>
 
     <div class="ld-sec">
-      <div class="ld-sec-t">玩法</div>
-      <div class="ld-opt"><span>抽中後踢走（淘汰模式）</span><button class="ld-switch" id="optRemove" aria-label="淘汰模式"></button></div>
-      <div class="ld-opt"><span>聲效</span><button class="ld-switch" id="optSound" aria-label="聲效"></button></div>
-      <div class="ld-opt"><span>震動（Android）</span><button class="ld-switch" id="optVibe" aria-label="震動"></button></div>
-      <div class="ld-opt"><span>轉幾耐</span><div class="ld-seg" id="optDur">
-        <button data-d="short">快</button><button data-d="mid">中</button><button data-d="long">慢</button></div></div>
+      <div class="ld-sec-t">匯出／匯入</div>
+      <div class="ld-opt"><span>格式</span><div class="ld-seg" id="fmtSeg">
+        <button data-f="csv">CSV</button><button data-f="xml">XML</button><button data-f="txt">TXT</button></div></div>
+      <div class="ld-opt"><span>匯出邊啲</span><div class="ld-seg" id="scopeSeg">
+        <button data-s="cur">呢個輪盤</button><button data-s="all">全部輪盤</button></div></div>
+      <div class="ld-pop-row">
+        <button class="ld-pbtn ld-neu" id="importBtn">匯入檔案</button>
+        <button class="ld-pbtn main" id="exportBtn">匯出</button>
+      </div>
+      <input type="file" id="importFile" accept=".csv,.xml,.txt,text/csv,text/xml,application/xml,text/plain" hidden>
+      <div class="ld-note">匯入嘅輪盤會加做新輪盤，唔會改到現有嘅。CSV、XML、TXT 都得，按副檔名判斷。</div>
     </div>
 
     <div class="ld-sec">
@@ -415,7 +436,7 @@ function load(){
     const w = seeds();
     S = {wheels:w, cur:w[0].id, hist:[], set:{}};
   }
-  S.set = Object.assign({sound:true, remove:false, vibe:true, dur:'mid'}, S.set||{});
+  S.set = Object.assign({sound:true, remove:false, vibe:true, dur:'mid', fmt:'csv', scope:'all'}, S.set||{});
   S.hist = Array.isArray(S.hist) ? S.hist : [];
   S.wheels.forEach(w=>w.items.forEach((it,i)=>{ if(typeof it.c !== 'number') it.c = i%PALETTE.length; }));
   if(!S.wheels.find(w=>w.id===S.cur)) S.cur = S.wheels[0].id;
@@ -1066,22 +1087,26 @@ function closeSheet(){
   }, 180);
   setTimeout(checkVer, 800);
 }
-$('editBtn').addEventListener('click', openSheet);
+$('editBtn').addEventListener('click', ()=>{
+  const g = $('editBtn').querySelector('svg');
+  if(g) g.animate([{transform:'rotate(0deg)', easing:'cubic-bezier(.2,.9,.3,1.2)'}, {transform:'rotate(120deg)'}], {duration:420});
+  openSheet();
+});
 $('doneBtn').addEventListener('click', closeSheet);
 $('shade').addEventListener('click', closeSheet);
 
 function renderSheet(stagger){ renderChips(); renderItems(stagger); renderOpts(); renderHist(); }
 function renderChips(){
-  const c = $('wheelChips'); c.innerHTML = '';
+  const sel = $('wheelSel'); sel.innerHTML = '';
   S.wheels.forEach(w=>{
-    const b = document.createElement('button'); b.className = 'ld-chip ld-neu'+(w.id===S.cur?' cur':''); b.textContent = w.name;
-    b.onclick = ()=>{ if(w.id === S.cur) return; S.cur = w.id; save(); renderChips(); renderItems(true); };
-    c.appendChild(b);
+    const o = document.createElement('option'); o.value = w.id;
+    o.textContent = w.name+'（'+w.items.filter(i=>i.text.trim()).length+' 個）';
+    if(w.id === S.cur) o.selected = true;
+    sel.appendChild(o);
   });
-  const add = document.createElement('button'); add.className = 'ld-chip ld-neu add'; add.textContent = '＋ 新輪盤';
-  add.onclick = ()=>newWheel(false);
-  c.appendChild(add);
 }
+$('wheelSel').addEventListener('change', e=>{ S.cur = e.target.value; save(); renderChips(); renderItems(true); });
+$('newWheelBtn').addEventListener('click', ()=>newWheel(false));
 const X_SVG = '<svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg>';
 function makeRow(it){
   const row = document.createElement('div'); row.className = 'ld-item'+(it.off?' off':''); row.dataset.id = it.id;
@@ -1185,24 +1210,35 @@ $('delWheelBtn').addEventListener('click', ()=>{
 });
 
 const SPK_ON = '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+const VIB_ON = '<svg viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 9v6M19.5 9v6M2 11v2M22 11v2"/></svg>';
+const VIB_OFF = '<svg viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M3 3l18 18"/></svg>';
 const SPK_OFF = '<svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
 function renderOpts(){
   $('optRemove').classList.toggle('on', S.set.remove);
-  $('optSound').classList.toggle('on', S.set.sound);
-  $('optVibe').classList.toggle('on', S.set.vibe);
   document.querySelectorAll('#optDur button').forEach(b=>b.classList.toggle('cur', b.dataset.d === S.set.dur));
   const sb = $('soundBtn');
   sb.innerHTML = S.set.sound ? SPK_ON : SPK_OFF;
   sb.classList.toggle('off', !S.set.sound);
+  const vb = $('vibeBtn');
+  vb.innerHTML = S.set.vibe ? VIB_ON : VIB_OFF;
+  vb.classList.toggle('off', !S.set.vibe);
+  document.querySelectorAll('#fmtSeg button').forEach(b=>b.classList.toggle('cur', b.dataset.f === S.set.fmt));
+  document.querySelectorAll('#scopeSeg button').forEach(b=>b.classList.toggle('cur', b.dataset.s === S.set.scope));
 }
 function setSound(on){ S.set.sound = on; save(); renderOpts(); if(on) ensureAudio(); else releaseAudio(); }
 $('optRemove').addEventListener('click', ()=>{ S.set.remove = !S.set.remove; save(); renderOpts(); });
-$('optSound').addEventListener('click', ()=>setSound(!S.set.sound));
-$('optVibe').addEventListener('click', ()=>{ S.set.vibe = !S.set.vibe; save(); renderOpts(); });
+function popIcon(el){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+$('vibeBtn').addEventListener('click', ()=>{
+  S.set.vibe = !S.set.vibe; save(); renderOpts(); popIcon($('vibeBtn'));
+  if(S.set.vibe) vibe(30);
+  toast(S.set.vibe ? (navigator.vibrate ? '震動：開' : '震動：開（iPhone 唔支援網頁震動）') : '震動：熄');
+});
+$('fmtSeg').addEventListener('click', e=>{ const f = e.target.dataset && e.target.dataset.f; if(f){ S.set.fmt = f; save(); renderOpts(); } });
+$('scopeSeg').addEventListener('click', e=>{ const v = e.target.dataset && e.target.dataset.s; if(v){ S.set.scope = v; save(); renderOpts(); } });
 $('optDur').addEventListener('click', e=>{ const d = e.target.dataset && e.target.dataset.d; if(d){ S.set.dur = d; save(); renderOpts(); } });
 $('soundBtn').addEventListener('click', ()=>{
   setSound(!S.set.sound);
-  const sb = $('soundBtn'); sb.classList.remove('pop'); void sb.offsetWidth; sb.classList.add('pop');
+  popIcon($('soundBtn'));
   toast(S.set.sound ? '聲效：開' : '聲效：熄');
 });
 function renderHist(){
@@ -1214,6 +1250,121 @@ function renderHist(){
     return '<div><span>'+tm+'</span><b>'+esc(x.text)+'</b><span>'+esc(x.w)+'</span></div>';
   }).join('');
 }
+
+/* ================= 匯出／匯入（CSV、XML、TXT） ================= */
+const WEIGHTS = [1,2,3,4,5,10];
+const fixW = v => { const n = Math.max(1, Math.round(+v || 1)); return WEIGHTS.reduce((a,b)=>Math.abs(b-n) < Math.abs(a-n) ? b : a, 1); };
+const xmlEsc = v => String(v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+const csvCell = v => { v = String(v); return /[",\r\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+const liveItems = w => w.items.filter(i=>i.text.trim());
+function toCSV(ws){
+  const rows = ['wheel,item,weight'];
+  ws.forEach(w=>{ const it = liveItems(w); if(!it.length) rows.push(csvCell(w.name)+',,'); it.forEach(i=>rows.push([w.name, i.text.trim(), i.w||1].map(csvCell).join(','))); });
+  return '﻿'+rows.join('\r\n')+'\r\n';            // BOM：Excel 開中文唔會亂碼
+}
+function toXML(ws){
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<luckyDraw version="1">\n'+ws.map(w=>
+    '  <wheel name="'+xmlEsc(w.name)+'">\n'+liveItems(w).map(i=>'    <item weight="'+(i.w||1)+'">'+xmlEsc(i.text.trim())+'</item>\n').join('')+'  </wheel>\n').join('')+'</luckyDraw>\n';
+}
+function toTXT(ws){
+  return ws.map(w=>'# '+w.name+'\n'+liveItems(w).map(i=>i.text.trim()+((i.w||1) > 1 ? ' ×'+i.w : '')+'\n').join('')).join('\n');
+}
+function parseCSVRows(t){
+  const rows = []; let row = [], cell = '', q = false;
+  for(let i=0;i<t.length;i++){
+    const c = t[i];
+    if(q){ if(c === '"'){ if(t[i+1] === '"'){ cell += '"'; i++; } else q = false; } else cell += c; }
+    else if(c === '"') q = true;
+    else if(c === ',' || c === '\t'){ row.push(cell); cell = ''; }
+    else if(c === '\n' || c === '\r'){ if(c === '\r' && t[i+1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += c;
+  }
+  if(cell !== '' || row.length){ row.push(cell); rows.push(row); }
+  return rows.map(r=>r.map(x=>x.trim())).filter(r=>r.some(x=>x));
+}
+function fromCSV(t, fallback){
+  const rows = parseCSVRows(t), out = [], get = n => { let w = out.find(x=>x.name===n); if(!w){ w = {name:n, items:[]}; out.push(w); } return w; };
+  if(!rows.length) return out;
+  const h = rows[0].map(x=>x.toLowerCase());
+  let iw = h.findIndex(x=>['wheel','輪盤','輪盤名'].includes(x)), ii = h.findIndex(x=>['item','項目','抽咩','name'].includes(x)), ig = h.findIndex(x=>['weight','比重'].includes(x));
+  let body = rows;
+  if(ii >= 0) body = rows.slice(1);
+  else{
+    const n = Math.max(...rows.map(r=>r.length));
+    if(n >= 3){ iw = 0; ii = 1; ig = 2; }
+    else if(n === 2 && rows.every(r=>!r[1] || /^\d+$/.test(r[1]))){ iw = -1; ii = 0; ig = 1; }
+    else if(n === 2){ iw = 0; ii = 1; ig = -1; }
+    else { iw = -1; ii = 0; ig = -1; }
+  }
+  body.forEach(r=>{
+    const w = get(iw >= 0 && r[iw] ? r[iw] : fallback), txt = r[ii] || '';
+    if(txt) w.items.push({text:txt, w:ig >= 0 ? fixW(r[ig]) : 1});
+  });
+  return out;
+}
+function fromXML(t, fallback){
+  const doc = new DOMParser().parseFromString(t, 'application/xml');
+  if(doc.getElementsByTagName('parsererror').length) throw new Error('XML 格式唔啱');
+  const items = el => Array.from(el.getElementsByTagName('item')).map(n=>({text:n.textContent.trim(), w:fixW(n.getAttribute('weight'))})).filter(x=>x.text);
+  const ws = Array.from(doc.getElementsByTagName('wheel'));
+  if(ws.length) return ws.map(w=>({name:(w.getAttribute('name')||'').trim() || fallback, items:items(w)}));
+  const it = items(doc); return it.length ? [{name:fallback, items:it}] : [];
+}
+function fromTXT(t, fallback){
+  const out = []; let cur = null;
+  t.split(/\r?\n/).forEach(line=>{
+    const l = line.trim(); if(!l) return;
+    if(/^#/.test(l)){ cur = {name:l.replace(/^#+\s*/,'') || fallback, items:[]}; out.push(cur); return; }
+    if(!cur){ cur = {name:fallback, items:[]}; out.push(cur); }
+    const m = l.replace(/^[-•・*]\s+/,'').match(/^(.+?)\s*(?:×|\s[xX*])\s*(\d+)$/);
+    cur.items.push(m ? {text:m[1].trim(), w:fixW(m[2])} : {text:l.replace(/^[-•・*]\s+/,''), w:1});
+  });
+  return out;
+}
+function localDate(){ const d = new Date(); return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
+async function exportWheels(){
+  const ws = S.set.scope === 'all' ? S.wheels : [curW()], f = S.set.fmt;
+  const text = f === 'xml' ? toXML(ws) : f === 'txt' ? toTXT(ws) : toCSV(ws);
+  const type = {csv:'text/csv', xml:'application/xml', txt:'text/plain'}[f];
+  const name = 'lucky-draw-'+(S.set.scope === 'all' ? 'all' : 'wheel')+'-'+localDate()+'.'+f;     // 檔名用英文（WEB-15）
+  const blob = new Blob([text], {type:type+';charset=utf-8'});
+  try{
+    const file = new File([blob], name, {type});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:'幸運輪盤'});
+      toast('已匯出 '+ws.length+' 個輪盤'); return;
+    }
+  }catch(e){ if(e && e.name === 'AbortError') return; }
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+  toast('已下載 '+name);
+}
+function importText(text, fileName){
+  text = text.replace(/^﻿/, '');
+  const ext = (fileName.match(/\.(\w+)$/)||[])[1], kind = (ext||'').toLowerCase();
+  const base = fileName.replace(/\.\w+$/,'').trim() || '匯入輪盤';
+  const k = ['csv','xml','txt'].includes(kind) ? kind : /^\s*</.test(text) ? 'xml' : /,/.test(text) ? 'csv' : 'txt';
+  const got = (k === 'xml' ? fromXML : k === 'csv' ? fromCSV : fromTXT)(text, base);
+  const ws = got.filter(w=>w.name).map(w=>({name:w.name.slice(0,40), items:w.items.slice(0,200)}));
+  if(!ws.length || !ws.some(w=>w.items.length)) throw new Error('檔案入面搵唔到輪盤');
+  let n = 0, first = null;
+  ws.forEach(w=>{
+    let name = w.name; while(S.wheels.some(x=>x.name===name)) name += '（匯入）';
+    const nw = {id:uid(), name, items:w.items.map((it,i)=>({id:uid(), text:it.text.slice(0,40), w:it.w||1, off:false, c:i%PALETTE.length}))};
+    S.wheels.push(nw); n += nw.items.length; if(!first) first = nw;
+  });
+  S.cur = first.id; save(); renderChips(); renderItems(true);
+  return {wheels:ws.length, items:n};
+}
+$('exportBtn').addEventListener('click', exportWheels);
+$('importBtn').addEventListener('click', ()=>$('importFile').click());
+$('importFile').addEventListener('change', async e=>{
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if(!f) return;
+  try{ const r = importText(await f.text(), f.name); toast('匯入咗 '+r.wheels+' 個輪盤（'+r.items+' 項）'); }
+  catch(err){ toast(err && err.message ? err.message : '匯入唔到'); }
+});
 
 /* ================= 提示 ================= */
 let toastT = 0;
@@ -1257,7 +1408,7 @@ $('top').animate([{transform:'translateY(-24px)', opacity:0, easing:'cubic-bezie
 $('bottom').animate([{transform:'translateY(40px)', opacity:0, easing:'cubic-bezier(.16,1.2,.3,1)'}, {transform:'none', opacity:1}], {duration:620, delay:160, fill:'backwards'});
 setTimeout(checkVer, 1500);
 if(window.ResizeObserver) new ResizeObserver(()=>layout()).observe($('stage'));
-window.__ld = {get rot(){ return rot; }, segAt:()=>segAt(rot), segs:()=>segs, shown:()=>shown, spin, state:()=>S,     // 測試用
+window.__ld = {importText, toCSV, toXML, toTXT, get rot(){ return rot; }, segAt:()=>segAt(rot), segs:()=>segs, shown:()=>shown, spin, state:()=>S,     // 測試用
   audio:()=>ac && {state:ac.state, t:ac.currentTime}, rebuildAudio:()=>{ audRe = true; ensureAudio(); }, tickCount:()=>tickN};
 })();
 </script>
